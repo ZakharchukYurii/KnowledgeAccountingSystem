@@ -4,6 +4,7 @@ using BLL.Infrastructure;
 using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
+using DAL.UoW;
 using System.Collections.Generic;
 
 namespace BLL.Services
@@ -11,6 +12,11 @@ namespace BLL.Services
     public class KnowledgeService : IKnowledgeService
     {
         public IKnowledgeUnitOfWork Database { get; set; }
+
+        public KnowledgeService(string connection)
+        {
+            Database = new KnowledgeUoW(connection);
+        }
 
         public KnowledgeService(IKnowledgeUnitOfWork uow)
         {
@@ -38,24 +44,36 @@ namespace BLL.Services
         {
             if(item == null)
             {
-                throw new ValidationException("Item is not Valid", "");
+                throw new ValidationException("Item is undefined", "");
             }
 
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeDTO, Knowledge>()).CreateMapper();
             var knowledge = mapper.Map<KnowledgeDTO, Knowledge>(item);
+
             Database.Knowledges.Create(knowledge);
+            Database.Save();
         }
 
-        public void Update(KnowledgeDTO item)
+        public void Update(int id, KnowledgeDTO item)
         {
             if(item == null)
             {
-                throw new ValidationException("Item is not Valid", "");
+                throw new ValidationException("Item is undefined", "");
             }
 
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeDTO, Knowledge>()).CreateMapper();
-            var knowledge = mapper.Map<KnowledgeDTO, Knowledge>(item);
-            Database.Knowledges.Update(knowledge);
+            var itemToUpdate = Database.Knowledges.Get(id);
+
+            if(itemToUpdate == null)
+            {
+                throw new ValidationException("Knowledge is not found", "");
+            }
+
+            itemToUpdate.Name = item.Name;
+            itemToUpdate.AreaId = item.AreaId;
+            itemToUpdate.Area = Database.Areas.Get(item.AreaId);
+
+            Database.Knowledges.Update(itemToUpdate);
+            Database.Save();
         }
 
         public void Delete(int id)
@@ -66,23 +84,6 @@ namespace BLL.Services
             }
 
             Database.Areas.Delete(id);
-        }
-
-        public AreaDTO GetArea(int id)
-        {
-            if(id < 1)
-            {
-                throw new ValidationException("Id is not Valid", "Id");
-            }
-
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Area, AreaDTO>()).CreateMapper();
-            return mapper.Map<Area, AreaDTO>(Database.Areas.Get(id));
-        }
-
-        public IEnumerable<AreaDTO> GetArea()
-        {
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Area, AreaDTO>()).CreateMapper();
-            return mapper.Map<IEnumerable<Area>, IEnumerable<AreaDTO>>(Database.Areas.GetAll());
         }
 
         public void Dispose()

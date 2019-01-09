@@ -34,18 +34,12 @@ namespace DAL.Repositories
 
         public void Create(User item)
         {
-            if(item != null)
-            {
-                db.Users.Add(item);
-            }
+            db.Users.Add(item);
         }
 
         public void Update(User item)
         {
-            if(item != null)
-            {
-                db.Entry(item).State = EntityState.Modified;
-            }
+            db.Entry(item).State = EntityState.Modified;
         }
 
         public void Delete(int id)

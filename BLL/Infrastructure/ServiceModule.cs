@@ -15,7 +15,7 @@ namespace BLL.Infrastructure
 
         public override void Load()
         {
-            Bind<IKnowledgeUnitOfWork>().To<KnowledgeUnitOfWork>().WithConstructorArgument(connectionString);
+            Bind<IKnowledgeUnitOfWork>().To<KnowledgeUoW>().WithConstructorArgument(connectionString);
         }
     }
 }

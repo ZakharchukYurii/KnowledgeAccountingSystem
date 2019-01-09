@@ -16,6 +16,16 @@ namespace DAL.UoW
         private UserRepository userRepository;
         private KnowledgeRateRepository rateRepository;
 
+        public KnowledgeUoW(string connectionString)
+        {
+            db = new KnowledgeContext(connectionString);
+        }
+
+        public KnowledgeUoW(KnowledgeContext context)
+        {
+            this.db = context;
+        }
+
         public IRepository<Knowledge> Knowledges
         {
             get

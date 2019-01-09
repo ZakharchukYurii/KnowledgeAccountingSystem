@@ -38,24 +38,34 @@ namespace BLL.Services
         {
             if(item == null)
             {
-                throw new ValidationException("Item is not Valid", "");
+                throw new ValidationException("Item is undefined", "");
             }
 
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<AreaDTO, Area>()).CreateMapper();
             var area = mapper.Map<AreaDTO, Area>(item);
+
             Database.Areas.Create(area);
+            Database.Save();
         }
 
-        public void Update(AreaDTO item)
+        public void Update(int id, AreaDTO item)
         {
             if(item == null)
             {
-                throw new ValidationException("Item is not Valid", "");
+                throw new ValidationException("Item is undefined", "");
             }
 
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<AreaDTO, Area>()).CreateMapper();
-            var area = mapper.Map<AreaDTO, Area>(item);
-            Database.Areas.Update(area);
+            var itemToUpdate = Database.Areas.Get(id);
+
+            if(itemToUpdate == null)
+            {
+                throw new ValidationException("Area is not found", "");
+            }
+
+            itemToUpdate.Name = item.Name;
+
+            Database.Areas.Update(itemToUpdate);
+            Database.Save();
         }
 
         public void Delete(int id)

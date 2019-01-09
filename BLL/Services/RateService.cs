@@ -44,18 +44,32 @@ namespace BLL.Services
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeRateDTO, KnowledgeRate>()).CreateMapper();
             var rate = mapper.Map<KnowledgeRateDTO, KnowledgeRate>(item);
             Database.Rates.Create(rate);
+            Database.Save();
         }
 
-        public void Update(KnowledgeRateDTO item)
+        public void Update(int id, KnowledgeRateDTO item)
         {
             if(item == null)
             {
                 throw new ValidationException("Item is not Valid", "");
             }
 
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeRateDTO, KnowledgeRate>()).CreateMapper();
-            var rate = mapper.Map<KnowledgeRateDTO, KnowledgeRate>(item);
-            Database.Rates.Update(rate);
+            var itemToUpdate = Database.Rates.Get(id);
+
+            if(itemToUpdate == null)
+            {
+                throw new ValidationException("Rate is not found", "");
+            }
+
+            //itemToUpdate.AreaId = item.AreaId;
+            //itemToUpdate.Area = Database.Areas.Get(item.AreaId);
+            itemToUpdate.KnowledgeId = item.KnowledgeId;
+            itemToUpdate.Knowledge = Database.Knowledges.Get(item.KnowledgeId);
+            itemToUpdate.UserId = item.UserId;
+            itemToUpdate.User = Database.Users.Get(item.UserId);
+
+            Database.Rates.Update(itemToUpdate);
+            Database.Save();
         }
 
         public void Delete(int id)

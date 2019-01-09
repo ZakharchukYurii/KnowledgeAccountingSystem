@@ -34,18 +34,12 @@ namespace DAL.Repositories
 
         public void Create(Area item)
         {
-            if(item != null)
-            {
-                db.Areas.Add(item);
-            }
+            db.Areas.Add(item);
         }
 
         public void Update(Area item)
         {
-            if(item != null)
-            {
-                db.Entry(item).State = EntityState.Modified;
-            }
+            db.Entry(item).State = EntityState.Modified;
         }
 
         public void Delete(int id)

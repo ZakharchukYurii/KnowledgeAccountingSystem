@@ -24,28 +24,22 @@ namespace DAL.Repositories
 
         public IEnumerable<Knowledge> GetAll()
         {
-            return db.Knowledges;
+            return db.Knowledges.ToList();
         }
 
         public IEnumerable<Knowledge> Find(Func<Knowledge, bool> predicate)
         {
-            return db.Knowledges.Where(predicate).ToList();
+            return db.Knowledges.Include(k => k.Area).Where(predicate).ToList();
         }
 
         public void Create(Knowledge item)
         {
-            if(item != null)
-            {
-                db.Knowledges.Add(item);
-            }
+            db.Knowledges.Add(item);
         }
 
         public void Update(Knowledge item)
         {
-            if(item != null)
-            {
-                db.Entry(item).State = EntityState.Modified;
-            }
+            db.Entry(item).State = EntityState.Modified;
         }
 
         public void Delete(int id)

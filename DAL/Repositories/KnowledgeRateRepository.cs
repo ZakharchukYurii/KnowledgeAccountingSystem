@@ -29,23 +29,20 @@ namespace DAL.Repositories
 
         public IEnumerable<KnowledgeRate> Find(Func<KnowledgeRate, bool> predicate)
         {
-            return db.Rates.Where(predicate).ToList();
+            return db.Rates.
+                Include(r => r.User).
+                Include(r => r.Knowledge).
+                Where(predicate).ToList();
         }
 
         public void Create(KnowledgeRate item)
         {
-            if(item != null)
-            {
-                db.Rates.Add(item);
-            }
+            db.Rates.Add(item);
         }
 
         public void Update(KnowledgeRate item)
         {
-            if(item != null)
-            {
-                db.Entry(item).State = EntityState.Modified;
-            }
+            db.Entry(item).State = EntityState.Modified;
         }
 
         public void Delete(int id)

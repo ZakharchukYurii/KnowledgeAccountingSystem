@@ -43,19 +43,29 @@ namespace BLL.Services
 
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, User>()).CreateMapper();
             var user = mapper.Map<UserDTO, User>(item);
+
             Database.Users.Create(user);
+            Database.Save();
         }
 
-        public void Update(UserDTO item)
+        public void Update(int id, UserDTO item)
         {
             if(item == null)
             {
                 throw new ValidationException("Item is not Valid", "");
             }
 
-            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, User>()).CreateMapper();
-            var user = mapper.Map<UserDTO, User>(item);
-            Database.Users.Update(user);
+            var itemToUpdate = Database.Users.Get(id);
+
+            if(itemToUpdate == null)
+            {
+                throw new ValidationException("User is not found", "");
+            }
+
+            itemToUpdate.Name = item.Name;
+
+            Database.Users.Update(itemToUpdate);
+            Database.Save();
         }
 
         public void Delete(int id)
