@@ -4,19 +4,14 @@ using BLL.Infrastructure;
 using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
-using DAL.UoW;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BLL.Services
 {
     public class KnowledgeService : IKnowledgeService
     {
         public IKnowledgeUnitOfWork Database { get; set; }
-
-        public KnowledgeService(string connection)
-        {
-            Database = new KnowledgeUoW(connection);
-        }
 
         public KnowledgeService(IKnowledgeUnitOfWork uow)
         {
@@ -31,13 +26,24 @@ namespace BLL.Services
             }
 
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Knowledge, KnowledgeDTO>()).CreateMapper();
-            return mapper.Map<Knowledge, KnowledgeDTO>(Database.Knowledges.Get(id));
+            var result = mapper.Map<Knowledge, KnowledgeDTO>(Database.Knowledges.Get(id));
+
+            result.Area = Database.Areas.Get(result.AreaId).Name;
+
+            return result;
         }
 
         public IEnumerable<KnowledgeDTO> Get()
         {
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<Knowledge, KnowledgeDTO>()).CreateMapper();
-            return mapper.Map<IEnumerable<Knowledge>, IEnumerable<KnowledgeDTO>>(Database.Knowledges.GetAll());
+            var result = mapper.Map<IEnumerable<Knowledge>, IEnumerable<KnowledgeDTO>>(Database.Knowledges.GetAll());
+
+            foreach(var knowledge in result)
+            {
+                knowledge.Area = Database.Areas.Get(knowledge.AreaId).Name;
+            }
+
+            return result;
         }
 
         public void Create(KnowledgeDTO item)
@@ -45,6 +51,15 @@ namespace BLL.Services
             if(item == null)
             {
                 throw new ValidationException("Item is undefined", "");
+            }
+
+            var sameItemFromDb = Database.Knowledges.Find(
+                x => x.Name == item.Name &&
+                x.AreaId == item.AreaId).FirstOrDefault();
+
+            if(sameItemFromDb != null)
+            {
+                throw new ValidationException("The same item is already exist", "");
             }
 
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeDTO, Knowledge>()).CreateMapper();
@@ -83,7 +98,8 @@ namespace BLL.Services
                 throw new ValidationException("Id is not valid", "Id");
             }
 
-            Database.Areas.Delete(id);
+            Database.Knowledges.Delete(id);
+            Database.Save();
         }
 
         public void Dispose()

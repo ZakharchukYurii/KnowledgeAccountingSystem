@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "Selection";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/AppScripts/Selection.js"></script>
+
+<h2>Selection</h2>
+
+<div id="selectionBlock">
+    <table>
+        <tr><td><label>Knowledge: </label></td><td><input type="text" id="knowledgeName" /></td></tr>
+        <tr><td><label>Rate: </label></td><td><input type="number" id="rate" /></td></tr>
+    </table>
+    <button id="makeSelection">Search</button>
+
+</div>
+<div id="resultBlock"></div>
+

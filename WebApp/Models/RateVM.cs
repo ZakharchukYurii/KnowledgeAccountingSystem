@@ -1,6 +1,6 @@
-﻿namespace BLL.DTO
+﻿namespace WebApp.Models
 {
-    public class SelectionDTO
+    public class RateVM
     {
         public int Id { get; set; }
         public int Rate { get; set; }

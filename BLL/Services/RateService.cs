@@ -5,6 +5,7 @@ using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BLL.Services
 {
@@ -25,13 +26,41 @@ namespace BLL.Services
             }
 
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeRate, KnowledgeRateDTO>()).CreateMapper();
-            return mapper.Map<KnowledgeRate, KnowledgeRateDTO>(Database.Rates.Get(id));
+            var result = mapper.Map<KnowledgeRate, KnowledgeRateDTO>(Database.Rates.Get(id));
+
+            result.Knowledge = Database.Knowledges.Get(result.KnowledgeId).Name;
+            result.User = Database.Users.Get(result.UserId).Name;
+
+            return result;
         }
 
         public IEnumerable<KnowledgeRateDTO> Get()
         {
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeRate, KnowledgeRateDTO>()).CreateMapper();
-            return mapper.Map<IEnumerable<KnowledgeRate>, IEnumerable<KnowledgeRateDTO>>(Database.Rates.GetAll());
+            var result = mapper.Map<IEnumerable<KnowledgeRate>, IEnumerable<KnowledgeRateDTO>>(Database.Rates.GetAll());
+
+            foreach(var rate in result)
+            {
+                rate.Knowledge = Database.Knowledges.Get(rate.KnowledgeId).Name;
+                rate.User = Database.Users.Get(rate.UserId).Name;
+            }
+
+            return result;
+        }
+
+        public IEnumerable<KnowledgeRateDTO> GetByUser(int id)
+        {
+            var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeRate, KnowledgeRateDTO>()).CreateMapper();
+            var result = mapper.Map<IEnumerable<KnowledgeRate>, IEnumerable<KnowledgeRateDTO>>(
+                Database.Rates.Find(x => x.UserId == id));
+
+            foreach(var rate in result)
+            {
+                rate.Knowledge = Database.Knowledges.Get(rate.KnowledgeId).Name;
+                rate.User = Database.Users.Get(rate.UserId).Name;
+            }
+
+            return result;
         }
 
         public void Create(KnowledgeRateDTO item)
@@ -41,8 +70,18 @@ namespace BLL.Services
                 throw new ValidationException("Item is not Valid", "");
             }
 
+            var sameItemFromDb = Database.Rates.Find(
+                x => x.UserId == item.UserId &&
+                x.KnowledgeId == item.KnowledgeId).FirstOrDefault();
+
+            if(sameItemFromDb != null)
+            {
+                throw new ValidationException("The same item is already exist", "");
+            }
+
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<KnowledgeRateDTO, KnowledgeRate>()).CreateMapper();
             var rate = mapper.Map<KnowledgeRateDTO, KnowledgeRate>(item);
+
             Database.Rates.Create(rate);
             Database.Save();
         }
@@ -61,8 +100,7 @@ namespace BLL.Services
                 throw new ValidationException("Rate is not found", "");
             }
 
-            //itemToUpdate.AreaId = item.AreaId;
-            //itemToUpdate.Area = Database.Areas.Get(item.AreaId);
+            itemToUpdate.Rate = item.Rate;
             itemToUpdate.KnowledgeId = item.KnowledgeId;
             itemToUpdate.Knowledge = Database.Knowledges.Get(item.KnowledgeId);
             itemToUpdate.UserId = item.UserId;
@@ -79,7 +117,8 @@ namespace BLL.Services
                 throw new ValidationException("Id is not valid", "Id");
             }
 
-            Database.Areas.Delete(id);
+            Database.Rates.Delete(id);
+            Database.Save();
         }
 
         public void Dispose()

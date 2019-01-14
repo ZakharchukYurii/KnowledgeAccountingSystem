@@ -18,8 +18,6 @@ namespace DAL.EF
         public KnowledgeContext(string connectionString)
             : base(connectionString)
         {
-            // When ADO.NET don't create SQL Client
-            //var instance = System.Data.Entity.SqlServer.SqlProviderServices.Instance;
         }
     }
 }

@@ -5,6 +5,7 @@ using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BLL.Services
 {
@@ -41,6 +42,13 @@ namespace BLL.Services
                 throw new ValidationException("Item is not Valid", "");
             }
 
+            var sameItemFromDb = Database.Users.Find(x => x.Name == item.Name).FirstOrDefault();
+
+            if(sameItemFromDb != null)
+            {
+                throw new ValidationException("The same user is already exist", "");
+            }
+
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, User>()).CreateMapper();
             var user = mapper.Map<UserDTO, User>(item);
 
@@ -63,6 +71,9 @@ namespace BLL.Services
             }
 
             itemToUpdate.Name = item.Name;
+            itemToUpdate.FullName = item.FullName;
+            itemToUpdate.EMail = item.EMail;
+            itemToUpdate.Password = item.Password;
 
             Database.Users.Update(itemToUpdate);
             Database.Save();
@@ -75,7 +86,8 @@ namespace BLL.Services
                 throw new ValidationException("Id is not valid", "Id");
             }
 
-            Database.Areas.Delete(id);
+            Database.Users.Delete(id);
+            Database.Save();
         }
 
         public void Dispose()

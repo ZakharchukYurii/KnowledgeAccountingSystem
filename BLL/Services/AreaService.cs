@@ -5,6 +5,7 @@ using BLL.DTO;
 using BLL.Interfaces;
 using BLL.Infrastructure;
 using AutoMapper;
+using System.Linq;
 
 namespace BLL.Services
 {
@@ -39,6 +40,13 @@ namespace BLL.Services
             if(item == null)
             {
                 throw new ValidationException("Item is undefined", "");
+            }
+
+            var sameItemFromDb = Database.Areas.Find(x => x.Name == item.Name).FirstOrDefault();
+
+            if(sameItemFromDb != null)
+            {
+                throw new ValidationException("The same item is already exist", "");
             }
 
             var mapper = new MapperConfiguration(cfg => cfg.CreateMap<AreaDTO, Area>()).CreateMapper();
@@ -76,6 +84,7 @@ namespace BLL.Services
             }
 
             Database.Areas.Delete(id);
+            Database.Save();
         }
 
         public void Dispose()

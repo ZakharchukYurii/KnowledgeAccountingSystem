@@ -8,6 +8,7 @@ namespace BLL.Interfaces
     {
         KnowledgeRateDTO Get(int id);
         IEnumerable<KnowledgeRateDTO> Get();
+        IEnumerable<KnowledgeRateDTO> GetByUser(int id);
         void Create(KnowledgeRateDTO item);
         void Update(int id, KnowledgeRateDTO item);
         void Delete(int id);

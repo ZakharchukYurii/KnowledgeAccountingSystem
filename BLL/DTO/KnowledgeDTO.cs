@@ -6,5 +6,6 @@
         public string Name { get; set; }
 
         public int AreaId { get; set; }
+        public string Area { get; set; }
     }
 }

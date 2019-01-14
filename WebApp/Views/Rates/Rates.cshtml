@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Rates";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/AppScripts/Rates.js"></script>
+
+<style>
+    #editBlock {
+        display: none;
+    }
+</style>
+
+<h2>Rates</h2>
+
+<div id="tableBlock"></div>
+<div id="editBlock">
+    <h3>Edit</h3>
+    <table>
+        <tr><td><input type="hidden" id="editId" /></td><td></td></tr>
+        <tr><td><label>UserId: </label></td><td><input type="number" id="editUserId" /></td></tr>
+        <tr><td><label>KnowledgeId: </label></td><td><input type="number" id="editKnowledgeId" /></td></tr>
+        <tr><td><label>Rate: </label></td><td><input type="number" id="editRate" /></td></tr>
+    </table>
+    <button id="editItemButton">Save</button>
+    <button id="cancelEdit">Cancel</button>
+</div>
+<div id="createBlock">
+    <h3>Add</h3>
+    <table>
+        <tr><td><label>UserId: </label></td><td><input type="number" id="addUserId" /></td></tr>
+        <tr><td><label>KnowledgeId: </label></td><td><input type="number" id="addKnowledgeId" /></td></tr>
+        <tr><td><label>Rate: </label></td><td><input type="number" id="addRate" /></td></tr>
+    </table>
+    <button id="addItemButton">Add</button>
+</div>

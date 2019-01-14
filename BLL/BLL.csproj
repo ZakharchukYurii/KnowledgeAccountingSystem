@@ -69,7 +69,7 @@
     <Compile Include="DTO\AreaDTO.cs" />
     <Compile Include="DTO\KnowledgeDTO.cs" />
     <Compile Include="DTO\KnowledgeRateDTO.cs" />
-    <Compile Include="DTO\SelectionDTO.cs" />
+    <Compile Include="DTO\SelectionRequestDTO.cs" />
     <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="Infrastructure\ServiceModule.cs" />
     <Compile Include="Infrastructure\ValidationException.cs" />

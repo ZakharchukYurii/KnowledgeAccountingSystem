@@ -6,8 +6,11 @@ namespace DAL.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string FullName { get; set; }
+        public string EMail { get; set; }
+        public string Password { get; set; }
 
-        public IEnumerable<Area> KnowledgeAreas { get; set; }
+        public ICollection<Area> KnowledgeAreas { get; set; }
 
         public User()
         {
